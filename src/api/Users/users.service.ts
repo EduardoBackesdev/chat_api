@@ -7,11 +7,10 @@ import bcrypt from 'bcrypt'
 import { loginUserDto } from 'src/api/dtos/loginDto';
 import { JwtService } from '@nestjs/jwt';
 import { resetPassDto } from '../dtos/resetPassDto';
-import { AuthService } from 'src/auth/auth';
+import { AuthService } from 'src/auth/auth.service';
 import { MailService } from 'src/lib/mail.service';
 
 export interface loginInterface {
-    id: number,
     access_token: string
 }
 
@@ -51,10 +50,8 @@ export class UsersService {
 
     // Reset Password
     async resetPass(user: resetPassDto): Promise<resetPassInterface>{
-
         const token = await this.reset.generateResetToken()
-        this.mailService.sendPasswordReset(user.email, token)
-        
+        await this.mailService.sendPasswordReset(user.email, token)
         const a:resetPassInterface = {
             Message: "Verify your Email!"
         }
@@ -72,7 +69,6 @@ export class UsersService {
             throw new UnauthorizedException('Invalid Password')
         }
         const r: loginInterface = {
-            id:  x.id,
             access_token: await this.jwtService.signAsync({sub: x.id, username: x.name})
         }  
         return r

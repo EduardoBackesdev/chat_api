@@ -4,13 +4,13 @@ import { createUserDto } from 'src/api/dtos/createUserDto';
 import { loginUserDto } from 'src/api/dtos/loginDto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { resetPassDto } from '../dtos/resetPassDto';
-import { AuthService } from 'src/auth/auth';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller()
 export class UsersController {
 
     constructor(private readonly usersService: UsersService){}
-
+ 
     // Create User
     @Post('/createUser')
     async createUser(@Body() user: createUserDto){
@@ -21,8 +21,8 @@ export class UsersController {
     // Forgot password
     @Post('/resetPassword')
     async resetPassword(@Body() user: resetPassDto){
-
-
+        const a = this.usersService.resetPass(user)
+        return a
     }
 
     // Login User
@@ -44,7 +44,6 @@ export class UsersController {
             message: "User found!",
             data: r
         }
-
     }
 
 }

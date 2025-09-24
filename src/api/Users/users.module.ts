@@ -4,10 +4,14 @@ import { UsersService } from './users.service';
 import { DatabaseModule } from 'src/db/database.module';
 import { Repositories } from 'src/db/entity.repositories';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from 'src/auth/auth';
+import { jwtConstants } from 'src/auth/auth.service';
+import { AuthModule } from 'src/auth/auth.module';
+import { MailModule } from 'src/lib/mail.module';
 
 @Module({
   imports: [DatabaseModule,
+    AuthModule,
+    MailModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
