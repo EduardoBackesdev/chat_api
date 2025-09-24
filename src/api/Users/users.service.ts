@@ -6,6 +6,9 @@ import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt'
 import { loginUserDto } from 'src/api/dtos/loginDto';
 import { JwtService } from '@nestjs/jwt';
+import { resetPassDto } from '../dtos/resetPassDto';
+import { AuthService } from 'src/auth/auth';
+import { MailService } from 'src/lib/mail.service';
 
 export interface loginInterface {
     id: number,
@@ -17,12 +20,16 @@ export interface accountInterface{
     email: string
 }
 
+export interface resetPassInterface {
+    Message: string
+}
+
 @Injectable()
 export class UsersService {
 
     constructor(
         @Inject('USER_REPOSITORY') private readonly userRepository: Repository<Accounts>,
-        private jwtService: JwtService
+        private jwtService: JwtService, private readonly reset: AuthService, private readonly mailService: MailService
     ){}
 
     // Create User
@@ -40,6 +47,18 @@ export class UsersService {
             }
             throw new InternalServerErrorException('Fail to create User!')
         }   
+    }
+
+    // Reset Password
+    async resetPass(user: resetPassDto): Promise<resetPassInterface>{
+
+        const token = await this.reset.generateResetToken()
+        this.mailService.sendPasswordReset(user.email, token)
+        
+        const a:resetPassInterface = {
+            Message: "Verify your Email!"
+        }
+        return  a
     }
 
     // Login User

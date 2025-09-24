@@ -3,6 +3,8 @@ import { UsersService } from './users.service';
 import { createUserDto } from 'src/api/dtos/createUserDto';
 import { loginUserDto } from 'src/api/dtos/loginDto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { resetPassDto } from '../dtos/resetPassDto';
+import { AuthService } from 'src/auth/auth';
 
 @Controller()
 export class UsersController {
@@ -14,6 +16,13 @@ export class UsersController {
     async createUser(@Body() user: createUserDto){
         await this.usersService.createUser(user)
         return {message: "User created with success!"}
+    }
+
+    // Forgot password
+    @Post('/resetPassword')
+    async resetPassword(@Body() user: resetPassDto){
+
+
     }
 
     // Login User
