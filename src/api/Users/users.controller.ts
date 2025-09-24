@@ -3,8 +3,8 @@ import { UsersService } from './users.service';
 import { createUserDto } from 'src/api/dtos/createUserDto';
 import { loginUserDto } from 'src/api/dtos/loginDto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { resetPassDto } from '../dtos/resetPassDto';
-import { AuthService } from 'src/auth/auth.service';
+import { emailResetPassDto } from '../dtos/emailResetPassDto';
+import { ResetPassDto } from '../dtos/resetPassDto';
 
 @Controller()
 export class UsersController {
@@ -19,11 +19,20 @@ export class UsersController {
     }
 
     // Forgot password
-    @Post('/resetPassword')
-    async resetPassword(@Body() user: resetPassDto){
-        const a = this.usersService.resetPass(user)
+    @Post('/emailResetPassword')
+    async emailResetPassword(@Body() user: emailResetPassDto){
+        const a = this.usersService.emailResetPass(user)
         return a
     }
+
+    // Change password with forgot password
+    @Post('resetPassword')
+    async resetPassword(@Body() user: ResetPassDto){
+        await this.usersService.resetPassword(user)
+        return {
+            Message: 'Password changed with success!'
+        }
+    } 
 
     // Login User
     @Post('/login')

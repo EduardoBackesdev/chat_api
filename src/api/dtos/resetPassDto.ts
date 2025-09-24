@@ -1,6 +1,12 @@
-import { IsEmail, IsString } from "class-validator";
+import { IsString } from "class-validator"
 
-export class resetPassDto{
-    @IsEmail()
-    email: string
+export class ResetPassDto{
+    @IsString()
+    token: string
+
+    @IsString()
+    actualPass: string
+
+    @IsString()
+    newPass: string
 }

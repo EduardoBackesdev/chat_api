@@ -33,5 +33,6 @@ export class MailService {
       } catch (error) {
         throw new BadRequestException(`fail send email: ${error}`)
       };
+      return token
   }
 }

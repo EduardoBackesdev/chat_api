@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { DatabaseModule } from 'src/db/database.module';
-import { Repositories } from 'src/db/entity.repositories';
+import { Repositories } from 'src/db/user.repositories';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from 'src/auth/auth.service';
 import { AuthModule } from 'src/auth/auth.module';
