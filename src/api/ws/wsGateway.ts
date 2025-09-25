@@ -15,21 +15,24 @@ interface dataFree {
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('AppGateway');
-  private onlineUsers = new Map<string, string>()
+  private onlineUsers: string[] = []
+
+  handleConnection(client: Socket, ...args: any[]) {
+    this.logger.log(`Client connected: ${client.id}`);
+  }
 
   // Register user like online
   @SubscribeMessage('register') 
-  register(@ConnectedSocket() client: Socket, user: string){
-    this.onlineUsers.set(user, client.id)
+  register(@ConnectedSocket() client: Socket){
+    this.onlineUsers.push(client.id)
+    this.server.emit('onlineUsers', this.onlineUsers) 
   }
 
   // Send message to user private online
   @SubscribeMessage('privateMessage')
-  handleMessage(@MessageBody() client: Socket, data: dataPrivate){
-    const user = this.onlineUsers.get(data.user)
-    if(user){
-      this.server.to(user).emit('private_message', data.message)
-    }
+  handleMessage(@MessageBody() data: dataPrivate){
+    const x = data.user
+    this.server.to(x).emit('private_message', data.message)
   }
 
   // See everyone online users
@@ -40,7 +43,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   }
 
   @SubscribeMessage('free_message')
-  handleFreeMessage(@MessageBody() client: Socket, data: dataFree){
+  handleFreeMessage(@MessageBody() data: dataFree){
     this.server.emit('free_message', data.message)
   }
   
@@ -48,11 +51,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.logger.log('Init');
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log(`Client connected: ${client.id}`);
-  }
-
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
+    this.onlineUsers = this.onlineUsers.filter(id => id != client.id)
+    this.server.emit('onlineUsers', this.onlineUsers)
   }
 }
